@@ -1,18 +1,30 @@
 // Mobile Menu Toggle
 const hamburger = document.querySelector('.hamburger');
 const navLinks = document.querySelector('.nav-links');
+const navItems = document.querySelectorAll('.nav-links a');
 
 hamburger.addEventListener('click', () => {
     navLinks.classList.toggle('active');
     hamburger.classList.toggle('active');
+    document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
 });
 
 // Close mobile menu when clicking on a nav link
-document.querySelectorAll('.nav-links a').forEach(link => {
+navItems.forEach(link => {
     link.addEventListener('click', () => {
         navLinks.classList.remove('active');
         hamburger.classList.remove('active');
+        document.body.style.overflow = '';
     });
+});
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (!navLinks.contains(e.target) && !hamburger.contains(e.target) && navLinks.classList.contains('active')) {
+        navLinks.classList.remove('active');
+        hamburger.classList.remove('active');
+        document.body.style.overflow = '';
+    }
 });
 
 // Smooth scrolling for anchor links
@@ -31,7 +43,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 // Add active class to nav links based on scroll position
 const sections = document.querySelectorAll('section');
-const navItems = document.querySelectorAll('.nav-links a');
 
 window.addEventListener('scroll', () => {
     let current = '';
@@ -84,4 +95,17 @@ themeToggle.addEventListener('click', () => {
 
 function updateIcon(theme) {
     icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-} 
+}
+
+// Touch device detection and adjustments
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+if (isTouchDevice) {
+    document.body.classList.add('touch-device');
+}
+
+// Prevent scroll on mobile when menu is open
+document.addEventListener('touchmove', (e) => {
+    if (navLinks.classList.contains('active')) {
+        e.preventDefault();
+    }
+}, { passive: false }); 
